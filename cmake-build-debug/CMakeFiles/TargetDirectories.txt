@@ -1,0 +1,3 @@
+/home/issa/STM32CubeIDE/workspace_1.16.1/myfirstapp/cmake-build-debug/CMakeFiles/myfirstapp.elf.dir
+/home/issa/STM32CubeIDE/workspace_1.16.1/myfirstapp/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/issa/STM32CubeIDE/workspace_1.16.1/myfirstapp/cmake-build-debug/CMakeFiles/rebuild_cache.dir
