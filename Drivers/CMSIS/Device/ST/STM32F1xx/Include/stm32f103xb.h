@@ -3385,7 +3385,7 @@ typedef struct
 #define ADC_CR2_DMA                         ADC_CR2_DMA_Msk                    /*!< ADC DMA transfer enable */
 #define ADC_CR2_ALIGN_Pos                   (11U)                              
 #define ADC_CR2_ALIGN_Msk                   (0x1UL << ADC_CR2_ALIGN_Pos)        /*!< 0x00000800 */
-#define ADC_CR2_ALIGN                       ADC_CR2_ALIGN_Msk                  /*!< ADC data alignment */
+#define ADC_CR2_ALIGN                       ADC_CR2_ALIGN_Msk                  /*!< ADC data Alignment */
 
 #define ADC_CR2_JEXTSEL_Pos                 (12U)                              
 #define ADC_CR2_JEXTSEL_Msk                 (0x7UL << ADC_CR2_JEXTSEL_Pos)      /*!< 0x00007000 */

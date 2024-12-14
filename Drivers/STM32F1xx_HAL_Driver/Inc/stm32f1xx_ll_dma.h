@@ -109,13 +109,13 @@ typedef struct
 
                                         This feature can be modified afterwards using unitary function @ref LL_DMA_SetMemoryIncMode(). */
 
-  uint32_t PeriphOrM2MSrcDataSize; /*!< Specifies the Peripheral data size alignment or Source data size alignment (byte, half word, word)
+  uint32_t PeriphOrM2MSrcDataSize; /*!< Specifies the Peripheral data size Alignment or Source data size Alignment (byte, half word, word)
                                         in case of memory to memory transfer direction.
                                         This parameter can be a value of @ref DMA_LL_EC_PDATAALIGN
 
                                         This feature can be modified afterwards using unitary function @ref LL_DMA_SetPeriphSize(). */
 
-  uint32_t MemoryOrM2MDstDataSize; /*!< Specifies the Memory data size alignment or Destination data size alignment (byte, half word, word)
+  uint32_t MemoryOrM2MDstDataSize; /*!< Specifies the Memory data size Alignment or Destination data size Alignment (byte, half word, word)
                                         in case of memory to memory transfer direction.
                                         This parameter can be a value of @ref DMA_LL_EC_MDATAALIGN
 
@@ -280,22 +280,22 @@ typedef struct
   * @}
   */
 
-/** @defgroup DMA_LL_EC_PDATAALIGN Peripheral data alignment
+/** @defgroup DMA_LL_EC_PDATAALIGN Peripheral data Alignment
   * @{
   */
-#define LL_DMA_PDATAALIGN_BYTE            0x00000000U             /*!< Peripheral data alignment : Byte     */
-#define LL_DMA_PDATAALIGN_HALFWORD        DMA_CCR_PSIZE_0         /*!< Peripheral data alignment : HalfWord */
-#define LL_DMA_PDATAALIGN_WORD            DMA_CCR_PSIZE_1         /*!< Peripheral data alignment : Word     */
+#define LL_DMA_PDATAALIGN_BYTE            0x00000000U             /*!< Peripheral data Alignment : Byte     */
+#define LL_DMA_PDATAALIGN_HALFWORD        DMA_CCR_PSIZE_0         /*!< Peripheral data Alignment : HalfWord */
+#define LL_DMA_PDATAALIGN_WORD            DMA_CCR_PSIZE_1         /*!< Peripheral data Alignment : Word     */
 /**
   * @}
   */
 
-/** @defgroup DMA_LL_EC_MDATAALIGN Memory data alignment
+/** @defgroup DMA_LL_EC_MDATAALIGN Memory data Alignment
   * @{
   */
-#define LL_DMA_MDATAALIGN_BYTE            0x00000000U             /*!< Memory data alignment : Byte     */
-#define LL_DMA_MDATAALIGN_HALFWORD        DMA_CCR_MSIZE_0         /*!< Memory data alignment : HalfWord */
-#define LL_DMA_MDATAALIGN_WORD            DMA_CCR_MSIZE_1         /*!< Memory data alignment : Word     */
+#define LL_DMA_MDATAALIGN_BYTE            0x00000000U             /*!< Memory data Alignment : Byte     */
+#define LL_DMA_MDATAALIGN_HALFWORD        DMA_CCR_MSIZE_0         /*!< Memory data Alignment : HalfWord */
+#define LL_DMA_MDATAALIGN_WORD            DMA_CCR_MSIZE_1         /*!< Memory data Alignment : Word     */
 /**
   * @}
   */

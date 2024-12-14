@@ -789,7 +789,7 @@ __STATIC_FORCEINLINE void __TZ_set_MSPLIM_NS(uint32_t MainStackPtrLimit)
 
 /**
   \brief   No Operation
-  \details No Operation does nothing. This instruction can be used for code alignment purposes.
+  \details No Operation does nothing. This instruction can be used for code Alignment purposes.
  */
 #define __NOP          __builtin_arm_nop
 

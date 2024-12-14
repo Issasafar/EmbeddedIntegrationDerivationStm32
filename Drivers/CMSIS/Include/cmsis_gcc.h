@@ -831,7 +831,7 @@ __STATIC_FORCEINLINE void __set_FPSCR(uint32_t fpscr)
 
 /**
   \brief   No Operation
-  \details No Operation does nothing. This instruction can be used for code alignment purposes.
+  \details No Operation does nothing. This instruction can be used for code Alignment purposes.
  */
 #define __NOP()                             __ASM volatile ("nop")
 
