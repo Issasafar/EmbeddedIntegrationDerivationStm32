@@ -26,6 +26,7 @@
 #include "math.h"
 #include "limits.h"
 #include "string.h"
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -128,7 +129,7 @@ void printToScreen(const char *message, enum Alignment alignment) {
 
 }
 
-enum FunctionType selectFunction() {
+enum FunctionType selectFunction(bool *exit) {
     printToScreen("Select", topCenter);
     printToScreen("Sin(x)", bottomStart);
     printToScreen("Cos(x)", bottomEnd);
@@ -136,25 +137,33 @@ enum FunctionType selectFunction() {
     enum FunctionType choices[] = {sine, cosine};
     enum FunctionType selected = choices[0];
     while (!configured) {
+        // settings
+        if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
+            *exit = true;
+            break;
+        }
+        // inc
         if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) {
             LCD_Clear();
             selected = choices[0];
             printToScreen("sin(x)", topStart);
         }
+        // dec
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0) {
             LCD_Clear();
             selected = choices[1];
             printToScreen("cos(x)", topStart);
         }
+        // ok
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) == 0) {
-            LCD_Clear();
             configured = true;
         }
     }
+    LCD_Clear();
     return selected;
 }
 
-enum OperationType selectOperation() {
+enum OperationType selectOperation(bool *exit) {
     printToScreen("Select", topCenter);
     printToScreen("Diff", bottomStart);
     printToScreen("Integ", bottomEnd);
@@ -162,44 +171,100 @@ enum OperationType selectOperation() {
     enum OperationType choices[] = {derivation, integration};
     enum OperationType selected = choices[0];
     while (!configured) {
+        // settings
+        if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
+            *exit = true;
+            break;
+        }
+        // inc
         if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) {
             LCD_Clear();
             selected = choices[0];
             printToScreen("Diff", topStart);
         }
+        // dec
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0) {
             LCD_Clear();
             selected = choices[1];
             printToScreen("Integ", topStart);
         }
+        // ok
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) == 0) {
-            LCD_Clear();
             configured = true;
         }
     }
+    LCD_Clear();
     return selected;
 }
 
-int *selectPoints(enum OperationType operationType) {
-    //todo implement
-    int points[] = {0, 0};
-    printToScreen("Select the points:", topCenter);
-    if (operationType == derivation) {
-        printToScreen("X=", bottomStart);
-    } else {
-        printToScreen("X1=", bottomStart);
-        printToScreen("X2=", bottomEnd);
+void selectPoints(enum OperationType operationType, bool *exit, double *points) {
+    char **pointsStr = {};
+    char *x1Str = "X1=";
+    char *x2Str = "X2";
+    char *xStr = "X";
+    bool configured[2] = {false, false};
+    while (!configured[0] && !configured[1]) {
+
+        printToScreen("Select the points:", topCenter);
+        if (operationType == derivation) {
+            // skip second point
+            configured[1] = true;
+            sprintf(pointsStr[0], "%.2f", points[0]);
+            printToScreen(strcat(xStr, pointsStr[0]), bottomStart);
+        } else {
+            sprintf(pointsStr[0], "%.2f", points[0]);
+            sprintf(pointsStr[1], "%.2f", points[1]);
+            printToScreen(strcat(x1Str, pointsStr[0]), bottomStart);
+            printToScreen(strcat(x2Str, pointsStr[1]), bottomEnd);
+        }
+        LCD_Clear();
+        // settings
+        if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
+            *exit = true;
+            break;
+        }
+        // ok
+        if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) == 0) {
+            if (!configured[0]) {
+                configured[0] = true;
+            } else {
+                configured[1] = true;
+            }
+        }
+        if (!configured[0]) {
+            // point x1
+            // inc
+            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) {
+                points[0] += .1f;
+            }
+            // dec
+            if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0) {
+                points[0] -= .1f;
+            }
+        } else {
+            // point x2
+            // inc
+            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) {
+                points[1] += .1f;
+            }
+            // dec
+            if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0) {
+                points[1] -= .1f;
+            }
+        }
     }
+    LCD_Clear();
 }
 
-void printResult(enum OperationType operationType, char *result) {
+void printResult(enum OperationType operationType, double result) {
+    char str[20] = {};
+    sprintf(str, ".4f", result);
     if (operationType == derivation) {
         printToScreen("Diff-Result:", topCenter);
-        printToScreen(result, bottomStart);
     } else {
         printToScreen("Integ-Result:", topCenter);
-        printToScreen(result, bottomStart);
     }
+    printToScreen(str, bottomStart);
 }
 
 /* USER CODE END PFP */
@@ -251,14 +316,37 @@ int main(void) {
 
         HAL_Delay(2000);
         LCD_Clear();
-        bool isEnd = false;
-        while (!isEnd) {
+        bool exit = false;
+        while (!exit) {
             // Setting pressed
             if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
                 break;
             }
-
-
+            enum FunctionType fn = selectFunction(&exit);
+            if (exit) {
+                break;
+            }
+            enum OperationType op = selectOperation(&exit);
+            if (exit) {
+                break;
+            }
+            double points[2] ={.0f, .0f};
+            selectPoints(op,&exit, points);
+            if (exit) {
+                break;
+            }
+            double result = .0f;
+            double n = 1e-5;
+            if (op == derivation) {
+                result = derivative(fn, points[0], n);
+            } else if(op == integration) {
+                result = trapezoidalIntegral(fn,points[0], points[1], n);
+            }
+            printResult(op, result);
+            HAL_Delay(4000);
+            if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
+                exit = true;
+            }
         }
 
         /* USER CODE END WHILE */
