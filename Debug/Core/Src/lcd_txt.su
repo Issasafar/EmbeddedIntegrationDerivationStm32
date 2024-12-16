@@ -1,0 +1,5 @@
+../Core/Src/lcd_txt.c:6:6:LCD_Init	8	static
+../Core/Src/lcd_txt.c:27:6:LCD_Write	16	static
+../Core/Src/lcd_txt.c:110:6:LCD_Puts	16	static
+../Core/Src/lcd_txt.c:156:6:LCD_Clear_RC	56	dynamic
+../Core/Src/lcd_txt.c:170:6:LCD_Clear	8	static

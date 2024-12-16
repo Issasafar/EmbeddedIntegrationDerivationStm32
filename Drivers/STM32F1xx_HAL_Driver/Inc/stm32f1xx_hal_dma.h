@@ -188,9 +188,9 @@ typedef struct __DMA_HandleTypeDef
 /** @defgroup DMA_Peripheral_data_size DMA Peripheral data size
   * @{
   */
-#define DMA_PDATAALIGN_BYTE          0x00000000U                  /*!< Peripheral data Alignment: Byte     */
-#define DMA_PDATAALIGN_HALFWORD      ((uint32_t)DMA_CCR_PSIZE_0)  /*!< Peripheral data Alignment: HalfWord */
-#define DMA_PDATAALIGN_WORD          ((uint32_t)DMA_CCR_PSIZE_1)  /*!< Peripheral data Alignment: Word     */
+#define DMA_PDATAALIGN_BYTE          0x00000000U                  /*!< Peripheral data alignment: Byte     */
+#define DMA_PDATAALIGN_HALFWORD      ((uint32_t)DMA_CCR_PSIZE_0)  /*!< Peripheral data alignment: HalfWord */
+#define DMA_PDATAALIGN_WORD          ((uint32_t)DMA_CCR_PSIZE_1)  /*!< Peripheral data alignment: Word     */
 /**
   * @}
   */
@@ -198,9 +198,9 @@ typedef struct __DMA_HandleTypeDef
 /** @defgroup DMA_Memory_data_size DMA Memory data size
   * @{
   */
-#define DMA_MDATAALIGN_BYTE          0x00000000U                  /*!< Memory data Alignment: Byte     */
-#define DMA_MDATAALIGN_HALFWORD      ((uint32_t)DMA_CCR_MSIZE_0)  /*!< Memory data Alignment: HalfWord */
-#define DMA_MDATAALIGN_WORD          ((uint32_t)DMA_CCR_MSIZE_1)  /*!< Memory data Alignment: Word     */
+#define DMA_MDATAALIGN_BYTE          0x00000000U                  /*!< Memory data alignment: Byte     */
+#define DMA_MDATAALIGN_HALFWORD      ((uint32_t)DMA_CCR_MSIZE_0)  /*!< Memory data alignment: HalfWord */
+#define DMA_MDATAALIGN_WORD          ((uint32_t)DMA_CCR_MSIZE_1)  /*!< Memory data alignment: Word     */
 /**
   * @}
   */

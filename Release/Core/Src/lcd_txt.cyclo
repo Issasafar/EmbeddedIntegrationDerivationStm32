@@ -1,0 +1,5 @@
+../Core/Src/lcd_txt.c:27:6:LCD_Write	10
+../Core/Src/lcd_txt.c:6:6:LCD_Init	1
+../Core/Src/lcd_txt.c:110:6:LCD_Puts	6
+../Core/Src/lcd_txt.c:156:6:LCD_Clear_RC	1
+../Core/Src/lcd_txt.c:170:6:LCD_Clear	1

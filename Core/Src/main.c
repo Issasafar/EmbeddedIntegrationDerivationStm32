@@ -18,15 +18,16 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "lcd_txt.h"
-#include <time.h>
-#include <stdbool.h>
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "math.h"
 #include "limits.h"
 #include "string.h"
 #include "stdio.h"
+#include <stdbool.h>
+#include "lcd_txt.h"
+#include "float.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -71,7 +72,6 @@ void SystemClock_Config(void);
 
 static void MX_GPIO_Init(void);
 
-
 /* USER CODE BEGIN PFP */
 
 double derivative(enum FunctionType fun, double x, double n) {
@@ -109,19 +109,19 @@ void printToScreen(const char *message, enum Alignment alignment) {
             LCD_Puts(0, 0, (int8_t *) message);
             break;
         case (topCenter):
-            LCD_Puts(((columnCount - messageSize) / 2), 0, (int8_t *) message);
+            LCD_Puts(0, ((columnCount - messageSize) / 2), (int8_t *) message);
             break;
         case (topEnd):
-            LCD_Puts(((columnCount - messageSize)), 0, (int8_t *) message);
+            LCD_Puts(0, ((columnCount - messageSize)), (int8_t *) message);
             break;
         case (bottomStart):
-            LCD_Puts(0, 1, (int8_t *) message);
+            LCD_Puts(1, 0, (int8_t *) message);
             break;
         case (bottomCenter):
-            LCD_Puts(((columnCount - messageSize) / 2), 1, (int8_t *) message);
+            LCD_Puts(1, ((columnCount - messageSize) / 2), (int8_t *) message);
             break;
         case (bottomEnd):
-            LCD_Puts(((columnCount - messageSize)), 1, (int8_t *) message);
+            LCD_Puts(1, ((columnCount - messageSize)), (int8_t *) message);
             break;
         default:
             break;
@@ -145,21 +145,21 @@ enum FunctionType selectFunction(bool *exit) {
         // inc
         if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) {
             LCD_Clear();
-            selected = choices[0];
-            printToScreen("sin(x)", topStart);
+            selected = choices[1];
+            printToScreen("cos(x)", topStart);
         }
         // dec
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0) {
             LCD_Clear();
-            selected = choices[1];
-            printToScreen("cos(x)", topStart);
+            selected = choices[0];
+            printToScreen("sin(x)", topStart);
         }
         // ok
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) == 0) {
+            LCD_Clear();
             configured = true;
         }
     }
-    LCD_Clear();
     return selected;
 }
 
@@ -179,14 +179,14 @@ enum OperationType selectOperation(bool *exit) {
         // inc
         if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) {
             LCD_Clear();
-            selected = choices[0];
-            printToScreen("Diff", topStart);
+            selected = choices[1];
+            printToScreen("Integ", topStart);
         }
         // dec
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0) {
             LCD_Clear();
-            selected = choices[1];
-            printToScreen("Integ", topStart);
+            selected = choices[0];
+            printToScreen("Diff", topStart);
         }
         // ok
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) == 0) {
@@ -198,26 +198,35 @@ enum OperationType selectOperation(bool *exit) {
 }
 
 void selectPoints(enum OperationType operationType, bool *exit, double *points) {
-    char **pointsStr = {};
+    char *pointsStr[2] = {"", ""};
     char *x1Str = "X1=";
-    char *x2Str = "X2";
-    char *xStr = "X";
+    char *x2Str = "X2=";
+    char *xStr = "X=";
     bool configured[2] = {false, false};
-    while (!configured[0] && !configured[1]) {
+    LCD_Clear();
+    while (!configured[0] || !configured[1]) {
 
-        printToScreen("Select the points:", topCenter);
-        if (operationType == derivation) {
-            // skip second point
-            configured[1] = true;
+        printToScreen("Select points:", topCenter);
+        if (!configured[0]) {
+            // first point
+            if (operationType == derivation) {
+                configured[1] = true;
+            }
             sprintf(pointsStr[0], "%.2f", points[0]);
-            printToScreen(strcat(xStr, pointsStr[0]), bottomStart);
-        } else {
-            sprintf(pointsStr[0], "%.2f", points[0]);
+            if (operationType == derivation) {
+                printToScreen(xStr, bottomStart);
+            } else {
+                printToScreen(x1Str, bottomStart);
+            }
+
+            printToScreen(pointsStr[0], bottomEnd);
+
+        } else if (!configured[1]) {
+            // second point
             sprintf(pointsStr[1], "%.2f", points[1]);
-            printToScreen(strcat(x1Str, pointsStr[0]), bottomStart);
-            printToScreen(strcat(x2Str, pointsStr[1]), bottomEnd);
+            printToScreen(x2Str, bottomStart);
+            printToScreen(pointsStr[1], bottomEnd);
         }
-        LCD_Clear();
         // settings
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
             *exit = true;
@@ -227,6 +236,7 @@ void selectPoints(enum OperationType operationType, bool *exit, double *points) 
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) == 0) {
             if (!configured[0]) {
                 configured[0] = true;
+                LCD_Clear();
             } else {
                 configured[1] = true;
             }
@@ -235,30 +245,31 @@ void selectPoints(enum OperationType operationType, bool *exit, double *points) 
             // point x1
             // inc
             if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) {
-                points[0] += .1f;
+                points[0] += .5f;
             }
             // dec
             if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0) {
-                points[0] -= .1f;
+                points[0] -= .5f;
             }
         } else {
             // point x2
             // inc
             if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) {
-                points[1] += .1f;
+                points[1] += .5f;
             }
             // dec
             if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0) {
-                points[1] -= .1f;
+                points[1] -= .5f;
             }
         }
+        HAL_Delay(100);
     }
     LCD_Clear();
 }
 
 void printResult(enum OperationType operationType, double result) {
     char str[20] = {};
-    sprintf(str, ".4f", result);
+    sprintf(str, "%.4f", result);
     if (operationType == derivation) {
         printToScreen("Diff-Result:", topCenter);
     } else {
@@ -306,47 +317,60 @@ int main(void) {
 
     LCD_Init(); // initialize the lcd screen
     LCD_Puts(0, 2, (int8_t *) "Welcome");
-    HAL_Delay(500);
+    //  HAL_Delay(1000);
     LCD_Puts(1, 2, (int8_t *) "PLease Wait");
+
     /* USER CODE END 2 */
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1) {
 
-        HAL_Delay(2000);
+
+        //  HAL_Delay(2000);
         LCD_Clear();
         bool exit = false;
+
         while (!exit) {
+
             // Setting pressed
             if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
                 break;
             }
+            HAL_Delay(1000);
             enum FunctionType fn = selectFunction(&exit);
             if (exit) {
                 break;
             }
+            HAL_Delay(1000);
             enum OperationType op = selectOperation(&exit);
             if (exit) {
                 break;
             }
-            double points[2] ={.0f, .0f};
-            selectPoints(op,&exit, points);
+            HAL_Delay(1000);
+            double points[2] = {.0f, .0f};
+            selectPoints(op, &exit, points);
             if (exit) {
                 break;
             }
+            HAL_Delay(1000);
             double result = .0f;
-            double n = 1e-5;
+            double n = DBL_EPSILON;
+//            double n = 1e-17;
             if (op == derivation) {
                 result = derivative(fn, points[0], n);
-            } else if(op == integration) {
-                result = trapezoidalIntegral(fn,points[0], points[1], n);
+            } else if (op == integration) {
+                result = trapezoidalIntegral(fn, points[0], points[1], n);
             }
             printResult(op, result);
-            HAL_Delay(4000);
-            if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
-                exit = true;
+            HAL_Delay(1000);
+            while (1) {
+                if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
+                    exit = true;
+                    break;
+                }
             }
+
         }
 
         /* USER CODE END WHILE */
@@ -403,25 +427,41 @@ static void MX_GPIO_Init(void) {
 /* USER CODE END MX_GPIO_Init_1 */
 
     /* GPIO Ports Clock Enable */
-    __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOD_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
 
     /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15, GPIO_PIN_RESET);
 
-    /*Configure GPIO pin : PC13 */
-    GPIO_InitStruct.Pin = GPIO_PIN_13;
-    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    /*Configure GPIO pin Output Level */
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8 | GPIO_PIN_9, GPIO_PIN_RESET);
+
+    /*Configure GPIO pins : PB12 PB13 PB14 PB15 */
+    GPIO_InitStruct.Pin = GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    /*Configure GPIO pins : PA1 PA2 PA3 PA4 */
-    GPIO_InitStruct.Pin = GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4;
+    /*Configure GPIO pins : PA8 PA9 */
+    GPIO_InitStruct.Pin = GPIO_PIN_8 | GPIO_PIN_9;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    /*Configure GPIO pin : PA11 */
+    GPIO_InitStruct.Pin = GPIO_PIN_11;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    /*Configure GPIO pins : PB3 PB5 PB9 */
+    GPIO_InitStruct.Pin = GPIO_PIN_3 | GPIO_PIN_5 | GPIO_PIN_9;
+    GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
