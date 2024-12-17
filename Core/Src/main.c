@@ -217,6 +217,7 @@ void selectPoints(enum OperationType operationType, bool *exit, double *points) 
     char *x2Str = "X2=";
     char *xStr = "X=";
     bool configured[2] = {false, false};
+    int currentPointIndex = 0;
     LCD_Clear();
     while (!configured[0] || !configured[1]) {
 
@@ -249,34 +250,22 @@ void selectPoints(enum OperationType operationType, bool *exit, double *points) 
         // ok
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) == 0) {
             if (!configured[0]) {
+                ++currentPointIndex;
                 configured[0] = true;
                 LCD_Clear();
             } else {
                 configured[1] = true;
             }
         }
-        if (!configured[0]) {
-            // point x1
-            // inc
-            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) {
-                points[0] += .5f;
-            }
-            // dec
-            if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0) {
-                points[0] -= .5f;
-            }
-        } else {
-            // point x2
-            // inc
-            if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) {
-                points[1] += .5f;
-            }
-            // dec
-            if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0) {
-                points[1] -= .5f;
-            }
+        // inc
+        if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) {
+            points[currentPointIndex] += .5f;
         }
-        HAL_Delay(150);
+        // dec
+        if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0) {
+            points[currentPointIndex] -= .5f;
+        }
+        HAL_Delay(125);
     }
     LCD_Clear();
 }
