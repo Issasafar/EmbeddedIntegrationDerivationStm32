@@ -22,11 +22,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "math.h"
-#include "limits.h"
 #include "string.h"
 #include "stdio.h"
 #include <stdbool.h>
-#include <stdlib.h>
 #include "lcd_txt.h"
 #include "float.h"
 /* USER CODE END Includes */
