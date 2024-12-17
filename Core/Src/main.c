@@ -376,7 +376,7 @@ int main(void) {
                 result = trapezoidalIntegral(fn, points[0], points[1], n);
             }
             printResult(op, result);
-            HAL_Delay(1000);
+
             // wait for ok to restart
             while (1) {
                 if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) == 0) {

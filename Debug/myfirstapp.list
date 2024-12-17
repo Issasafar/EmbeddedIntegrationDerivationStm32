@@ -2581,7 +2581,7 @@ int main(void) {
  8001780:	75fb      	strb	r3, [r7, #23]
 
         while (!exit) {
- 8001782:	e082      	b.n	800188a <main+0x142>
+ 8001782:	e083      	b.n	800188c <main+0x144>
 
             HAL_Delay(200);
  8001784:	20c8      	movs	r0, #200	@ 0xc8
@@ -2596,7 +2596,7 @@ int main(void) {
             if (exit) {
  800179a:	7dfb      	ldrb	r3, [r7, #23]
  800179c:	2b00      	cmp	r3, #0
- 800179e:	d17c      	bne.n	800189a <main+0x152>
+ 800179e:	d17d      	bne.n	800189c <main+0x154>
                 break;
             }
             HAL_Delay(200);
@@ -2612,7 +2612,7 @@ int main(void) {
             if (exit) {
  80017b6:	7dfb      	ldrb	r3, [r7, #23]
  80017b8:	2b00      	cmp	r3, #0
- 80017ba:	d170      	bne.n	800189e <main+0x156>
+ 80017ba:	d171      	bne.n	80018a0 <main+0x158>
                 break;
             }
             HAL_Delay(200);
@@ -2635,7 +2635,7 @@ int main(void) {
             if (exit) {
  80017ea:	7dfb      	ldrb	r3, [r7, #23]
  80017ec:	2b00      	cmp	r3, #0
- 80017ee:	d158      	bne.n	80018a2 <main+0x15a>
+ 80017ee:	d159      	bne.n	80018a4 <main+0x15c>
                 break;
             }
             HAL_Delay(200);
@@ -2690,36 +2690,35 @@ int main(void) {
             HAL_Delay(1000);
  8001870:	f44f 707a 	mov.w	r0, #1000	@ 0x3e8
  8001874:	f000 fa94 	bl	8001da0 <HAL_Delay>
-            // wait for settings pushed to restart
+            // wait for ok to restart
             while (1) {
-                if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
- 8001878:	2120      	movs	r1, #32
- 800187a:	480e      	ldr	r0, [pc, #56]	@ (80018b4 <main+0x16c>)
- 800187c:	f000 fd1c 	bl	80022b8 <HAL_GPIO_ReadPin>
- 8001880:	4603      	mov	r3, r0
- 8001882:	2b00      	cmp	r3, #0
- 8001884:	d1f8      	bne.n	8001878 <main+0x130>
+                if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) == 0) {
+ 8001878:	f44f 7100 	mov.w	r1, #512	@ 0x200
+ 800187c:	480d      	ldr	r0, [pc, #52]	@ (80018b4 <main+0x16c>)
+ 800187e:	f000 fd1b 	bl	80022b8 <HAL_GPIO_ReadPin>
+ 8001882:	4603      	mov	r3, r0
+ 8001884:	2b00      	cmp	r3, #0
+ 8001886:	d1f7      	bne.n	8001878 <main+0x130>
                     exit = true;
- 8001886:	2301      	movs	r3, #1
- 8001888:	75fb      	strb	r3, [r7, #23]
+ 8001888:	2301      	movs	r3, #1
+ 800188a:	75fb      	strb	r3, [r7, #23]
         while (!exit) {
- 800188a:	7dfb      	ldrb	r3, [r7, #23]
- 800188c:	f083 0301 	eor.w	r3, r3, #1
- 8001890:	b2db      	uxtb	r3, r3
- 8001892:	2b00      	cmp	r3, #0
- 8001894:	f47f af76 	bne.w	8001784 <main+0x3c>
- 8001898:	e76b      	b.n	8001772 <main+0x2a>
+ 800188c:	7dfb      	ldrb	r3, [r7, #23]
+ 800188e:	f083 0301 	eor.w	r3, r3, #1
+ 8001892:	b2db      	uxtb	r3, r3
+ 8001894:	2b00      	cmp	r3, #0
+ 8001896:	f47f af75 	bne.w	8001784 <main+0x3c>
+ 800189a:	e76a      	b.n	8001772 <main+0x2a>
                 break;
- 800189a:	bf00      	nop
- 800189c:	e769      	b.n	8001772 <main+0x2a>
+ 800189c:	bf00      	nop
+ 800189e:	e768      	b.n	8001772 <main+0x2a>
                 break;
- 800189e:	bf00      	nop
- 80018a0:	e767      	b.n	8001772 <main+0x2a>
+ 80018a0:	bf00      	nop
+ 80018a2:	e766      	b.n	8001772 <main+0x2a>
                 break;
- 80018a2:	bf00      	nop
+ 80018a4:	bf00      	nop
     while (1) {
- 80018a4:	e765      	b.n	8001772 <main+0x2a>
- 80018a6:	bf00      	nop
+ 80018a6:	e764      	b.n	8001772 <main+0x2a>
  80018a8:	08008464 	.word	0x08008464
  80018ac:	08008470 	.word	0x08008470
  80018b0:	3cb00000 	.word	0x3cb00000
