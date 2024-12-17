@@ -377,9 +377,9 @@ int main(void) {
             }
             printResult(op, result);
             HAL_Delay(1000);
-            // wait for settings pushed to restart
+            // wait for ok to restart
             while (1) {
-                if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
+                if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) == 0) {
                     exit = true;
                     break;
                 }
