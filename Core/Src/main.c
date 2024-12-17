@@ -26,6 +26,7 @@
 #include "string.h"
 #include "stdio.h"
 #include <stdbool.h>
+#include <stdlib.h>
 #include "lcd_txt.h"
 #include "float.h"
 /* USER CODE END Includes */
@@ -33,8 +34,8 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 enum FunctionType {
-    sine,
-    cosine
+    sine = 0,
+    cosine = 1
 };
 enum OperationType {
     integration = 0,
@@ -130,68 +131,81 @@ void printToScreen(const char *message, enum Alignment alignment) {
 }
 
 enum FunctionType selectFunction(bool *exit) {
+    char *selectionStr[2] = {"Sin(x)", "Cos(x)"};
     printToScreen("Select", topCenter);
-    printToScreen("Sin(x)", bottomStart);
-    printToScreen("Cos(x)", bottomEnd);
-    bool configured = false;
+    printToScreen(selectionStr[0], bottomStart);
+    printToScreen(selectionStr[1], bottomEnd);
     enum FunctionType choices[] = {sine, cosine};
-    enum FunctionType selected = choices[0];
+    char displayStr[6];
+    int i = 1;
+    enum FunctionType selected = choices[i];
+    bool configured = false;
     while (!configured) {
         // settings
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
             *exit = true;
             break;
         }
-        // inc
-        if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) {
-            LCD_Clear();
-            selected = choices[1];
-            printToScreen("cos(x)", topStart);
-        }
-        // dec
-        if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0) {
-            LCD_Clear();
-            selected = choices[0];
-            printToScreen("sin(x)", topStart);
+        // inc - dec
+        if ((HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) || (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0)) {
+            ++i;
+            i = (i) % 2;
+            selected = choices[i];
+            sprintf(displayStr, "%s", selectionStr[i]);
+            if (selected == sine) {
+                LCD_Clear_RC(1, 10, 6);
+                printToScreen(displayStr, bottomStart);
+            } else {
+                LCD_Clear_RC(1, 0, 6);
+                printToScreen(displayStr, bottomEnd);
+            }
         }
         // ok
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) == 0) {
             LCD_Clear();
             configured = true;
         }
+        HAL_Delay(150);
     }
     return selected;
 }
 
 enum OperationType selectOperation(bool *exit) {
+    char *selectionStr[2] = {"Diff", "Integ"};
     printToScreen("Select", topCenter);
-    printToScreen("Diff", bottomStart);
-    printToScreen("Integ", bottomEnd);
-    bool configured = false;
+    printToScreen(selectionStr[0], bottomStart);
+    printToScreen(selectionStr[1], bottomEnd);
     enum OperationType choices[] = {derivation, integration};
-    enum OperationType selected = choices[0];
+    char displayStr[5];
+    int i = 1;
+    enum OperationType selected = choices[i];
+    bool configured = false;
     while (!configured) {
         // settings
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
             *exit = true;
             break;
         }
-        // inc
-        if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) {
-            LCD_Clear();
-            selected = choices[1];
-            printToScreen("Integ", topStart);
-        }
-        // dec
-        if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0) {
-            LCD_Clear();
-            selected = choices[0];
-            printToScreen("Diff", topStart);
+        // inc - dec
+        if ((HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_11) == 0) || (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3) == 0)) {
+            ++i;
+            i = i % 2;
+            selected = choices[i];
+            sprintf(displayStr, "%s", selectionStr[i]);
+            if (selected == derivation) {
+                LCD_Clear_RC(1, 10, 6);
+                printToScreen(displayStr, bottomStart);
+            } else {
+                LCD_Clear_RC(1, 0, 6);
+                printToScreen(displayStr, bottomEnd);
+            }
         }
         // ok
         if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) == 0) {
+            LCD_Clear();
             configured = true;
         }
+        HAL_Delay(150);
     }
     LCD_Clear();
     return selected;
@@ -262,7 +276,7 @@ void selectPoints(enum OperationType operationType, bool *exit, double *points) 
                 points[1] -= .5f;
             }
         }
-        HAL_Delay(100);
+        HAL_Delay(150);
     }
     LCD_Clear();
 }
@@ -316,7 +330,7 @@ int main(void) {
     /* USER CODE BEGIN 2 */
 
     LCD_Init(); // initialize the lcd screen
-    LCD_Puts(0, 2, (int8_t *) "Welcome");
+    LCD_Puts(0, 2, (int8_t *) "Welcome :)");
     //  HAL_Delay(1000);
     LCD_Puts(1, 2, (int8_t *) "PLease Wait");
 
@@ -327,36 +341,35 @@ int main(void) {
     while (1) {
 
 
-        //  HAL_Delay(2000);
+        HAL_Delay(2000);
         LCD_Clear();
         bool exit = false;
 
         while (!exit) {
 
-            // Setting pressed
-            if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
-                break;
-            }
-            HAL_Delay(1000);
+            HAL_Delay(200);
+            // select function
             enum FunctionType fn = selectFunction(&exit);
             if (exit) {
                 break;
             }
-            HAL_Delay(1000);
+            HAL_Delay(200);
+            // select operation
             enum OperationType op = selectOperation(&exit);
             if (exit) {
                 break;
             }
-            HAL_Delay(1000);
+            HAL_Delay(200);
+            // select point/s
             double points[2] = {.0f, .0f};
             selectPoints(op, &exit, points);
             if (exit) {
                 break;
             }
-            HAL_Delay(1000);
+            HAL_Delay(200);
+            // show result
             double result = .0f;
             double n = DBL_EPSILON;
-//            double n = 1e-17;
             if (op == derivation) {
                 result = derivative(fn, points[0], n);
             } else if (op == integration) {
@@ -364,6 +377,7 @@ int main(void) {
             }
             printResult(op, result);
             HAL_Delay(1000);
+            // wait for settings pushed to restart
             while (1) {
                 if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0) {
                     exit = true;
