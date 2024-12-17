@@ -380,6 +380,7 @@ int main(void) {
             // wait for ok to restart
             while (1) {
                 if (HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_9) == 0) {
+                    LCD_Clear();
                     exit = true;
                     break;
                 }
