@@ -320,7 +320,6 @@ int main(void) {
 
     LCD_Init(); // initialize the lcd screen
     LCD_Puts(0, 2, (int8_t *) "Welcome :)");
-    //  HAL_Delay(1000);
     LCD_Puts(1, 2, (int8_t *) "PLease Wait");
 
     /* USER CODE END 2 */
